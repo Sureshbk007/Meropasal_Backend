@@ -18,15 +18,15 @@ class ApiError extends Error {
     }
   }
 
-  // toJSON() {
-  //   return {
-  //     statusCode: this.statusCode,
-  //     message: this.message,
-  //     success: this.success,
-  //     errors: this.errors,
-  //     // stack: this.stack,
-  //   };
-  // }
+  toJSON() {
+    return {
+      statusCode: this.statusCode,
+      message: this.message,
+      success: this.success,
+      errors: this.errors,
+      // stack: this.stack,
+    };
+  }
 }
 
 export { ApiError };

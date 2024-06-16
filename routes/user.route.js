@@ -1,5 +1,6 @@
 import express from "express";
 import { createUser, getAllUsers } from "../controllers/user.controller.js";
+import { verifyToken } from "../middlewares/verifyToken.middleware.js";
 
 const router = express.Router();
 
@@ -7,6 +8,6 @@ const router = express.Router();
 router.post("/createUser", createUser);
 
 // Get all the users
-router.post("/getAllUsers", getAllUsers);
+router.post("/getAllUsers", verifyToken, getAllUsers);
 
 export default router;

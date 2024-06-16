@@ -8,18 +8,18 @@ const productSchema = new Schema(
       trim: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
       trim: true,
     },
     crossPrice: {
-      type: String,
+      type: Number,
       trim: true,
     },
     quantity: {
       type: Number,
       required: true,
-      trime: true,
+      trim: true,
     },
     image: [
       {
@@ -27,8 +27,8 @@ const productSchema = new Schema(
         imageUrl: String,
       },
     ],
-    size: [],
-    color: [],
+    size: [String],
+    color: [String],
   },
   { timestamps: true }
 );
