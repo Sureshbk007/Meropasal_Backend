@@ -1,3 +1,5 @@
-import userRouter from "./userRoutes.js";
+import authRouter from "./auth.route.js";
+import userRouter from "./user.route.js";
+import productRouter from "./product.route.js";
 
-export { userRouter };
+export { authRouter, userRouter, productRouter };

@@ -1,16 +1,21 @@
-import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Register Controller
-const register = asyncHandler(async (req, res) => {
+const createUser = asyncHandler(async (req, res) => {
   const user = await User.create(req.body);
-  res.json(new ApiResponse(200, user, "User register successfully"));
+  if (!user) {
+    throw new ApiError(500, "Failed to create user");
+  }
+  res.status(201).json(new ApiResponse(201, user, "User created successfully"));
 });
 
-// Login Controller
-const login = asyncHandler(async (req, res) => {
-  res.send("hello from login");
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find();
+  res
+    .status(200)
+    .json(new ApiResponse(200, users, "Users retrieved successfully"));
 });
 
-export { register, login };
+export { createUser, getAllUsers };

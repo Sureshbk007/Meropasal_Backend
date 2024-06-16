@@ -1,5 +1,5 @@
 import express from "express";
-import { userRouter } from "./routes/index.js";
+import { authRouter, userRouter, productRouter } from "./routes/index.js";
 import cors from "cors";
 import { ApiError } from "./utils/ApiError.js";
 
@@ -10,25 +10,23 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.json({ limit: "16kb" }));
 app.use(cors());
 
-// Routes
+// Auth Route
+app.use("/auth", authRouter);
+
+//Secure Routes
 app.use("/user", userRouter);
-app.get("/", (req, res) => {
-  res.json({
-    message: "Hello Suresh",
-  });
-});
+app.use("/products", productRouter);
 
-// Global Error handling middleware
+// Global Error Handling Middleware
 app.use((err, req, res, next) => {
-  const error = err;
-  error.statusCode = err.statusCode || 500;
-  error.message = err.message || "Internal Server Error";
-  res.status(500).json(new ApiError(error.statusCode, error.message, error));
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(statusCode).json(new ApiError(statusCode, message, err.errors));
 });
 
-// Route for handling 404 error
-app.use((_, res) => {
-  const error = new ApiError(404, "Page not Found");
+// Route for Handling 404 Errors
+app.use((req, res) => {
+  const error = new ApiError(404, "Page Not Found");
   res.status(404).json(error);
 });
 

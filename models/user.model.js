@@ -19,7 +19,17 @@ const userSchema = new Schema(
       required: true,
     },
     avatar: {
+      imageUrl: String,
+      publicId: String,
+    },
+    role: {
       type: String,
+      default: "USER",
+      enum: ["ADMIN", "USER"],
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
