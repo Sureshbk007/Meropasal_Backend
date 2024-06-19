@@ -20,4 +20,11 @@ const getAllProducts = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, products, "Products retrieved successfully"));
 });
 
-export { createProduct, getAllProducts };
+const getSingleProduct = asyncHandler(async (req, res) => {
+  const slug = req.params.slug;
+  const product = await Product.findOne({ slug });
+  res
+    .status(200)
+    .json(new ApiResponse(200, product, "Product retrieved successfully"));
+});
+export { createProduct, getAllProducts, getSingleProduct };
