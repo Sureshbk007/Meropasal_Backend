@@ -1,5 +1,10 @@
 import express from "express";
-import { authRouter, userRouter, productRouter } from "./routes/index.js";
+import {
+  authRouter,
+  userRouter,
+  productRouter,
+  cartRouter,
+} from "./routes/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { ApiError } from "./utils/ApiError.js";
@@ -13,11 +18,12 @@ app.use(cookieParser());
 app.use(cors());
 
 // Auth Route
-app.use("/auth", authRouter);
+app.use("/api/v1/auth", authRouter);
 
 //Secure Routes
-app.use("/user", userRouter);
-app.use("/products", productRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/products", productRouter);
+app.use("/api/v1/cart", cartRouter);
 
 // Global Error Handling Middleware
 app.use((err, req, res, next) => {

@@ -1,11 +1,11 @@
-import { Schema, model } from "mongoose";
+import mongoose from "mongoose";
 import generateSlug from "../utils/generateSlug.js";
 
 // Review Schema
-const reviewSchema = new Schema(
+const reviewSchema = new mongoose.Schema(
   {
     user: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -15,10 +15,7 @@ const reviewSchema = new Schema(
       min: 1,
       max: 5,
     },
-    comment: {
-      type: String,
-      required: true,
-    },
+    comment: String,
     image: [
       {
         publicId: String,
@@ -30,29 +27,39 @@ const reviewSchema = new Schema(
 );
 
 // Variant Schema
-const variantSchema = new Schema({
+const variantSchema = new mongoose.Schema({
   color: String,
   size: String,
   price: {
     type: Number,
     required: true,
   },
-  crossPrice: Number,
+  crossedPrice: Number,
   images: [
     {
       publicId: String,
       imageUrl: String,
     },
   ],
+  stock: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 //Product Schema
-const productSchema = new Schema(
+const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
       trim: true,
+    },
+    category: {
+      type: mongoose.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
     slug: {
       type: String,
@@ -77,4 +84,4 @@ productSchema.pre("save", async function (next) {
   next();
 });
 
-export const Product = model("Product", productSchema);
+export const Product = mongoose.model("Product", productSchema);
