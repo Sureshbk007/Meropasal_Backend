@@ -21,12 +21,24 @@ const register = asyncHandler(async (req, res) => {
 // Login a user
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) throw new ApiError(401, "Invalid email or password");
+
+  const userWithPassword = await User.findOne({ email });
+  if (!userWithPassword)
+    throw new ApiError(401, "Invalid email or password", {
+      email: "Incorrect email address",
+    });
 
   //Compare passwords
-  const isMatch = user.comparePassword(password);
-  if (!isMatch) throw new ApiError(401, "Invalid email or password");
+  const isMatch = await userWithPassword.comparePassword(password);
+  if (!isMatch)
+    throw new ApiError(401, "Invalid email or password", {
+      password: "Incorrect password",
+    });
+
+  // Exclude sensitive fields
+  const user = await User.findOne({ email }).select(
+    "-password -createdAt -updatedAt -__v"
+  );
 
   // Generate JWt token
   const token = user.generateAuthToken();
@@ -43,7 +55,7 @@ const login = asyncHandler(async (req, res) => {
 // Logout a user
 const logout = asyncHandler(async (req, res) => {
   res.clearCookie("token");
-  res.json({ message: "Logout successful" });
+  res.json({ message: "Logout successfully", success: true });
 });
 
 export { register, login, logout };
