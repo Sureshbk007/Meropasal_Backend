@@ -82,4 +82,12 @@ const logout = asyncHandler(async (req, res) => {
   res.json({ message: "Logout successfully", success: true });
 });
 
-export { register, login, logout };
+//Load user if access token exist
+const getUserByToken = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id).select(
+    "-password -createdAt -updatedAt -__v"
+  );
+  res.status(200).json(user);
+});
+
+export { register, login, logout, getUserByToken };
