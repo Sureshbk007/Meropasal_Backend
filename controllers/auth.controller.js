@@ -2,29 +2,26 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import {
+  authValidator,
+  loginSchema,
+  registrationSchema,
+} from "../utils/authValidator.js";
 
 // Register a new user
 const register = asyncHandler(async (req, res) => {
   const { fullName, email, password } = req.body;
-
-  if (!fullName.trim() || !email.trim() || !password.trim()) {
-    const errors = {};
-    if (!fullName.trim()) errors.fullName = "Fullname is required";
-    if (!email.trim()) errors.email = "Email is required";
-    if (!password.trim()) errors.password = "Password is required";
-    throw new ApiError(401, "All fields are required", errors);
-  }
+  const errors = await authValidator(registrationSchema, req.body);
+  if (errors) throw new ApiError(401, "Validation error", errors);
 
   //Check if user already exist
   const existingUser = await User.findOne({ email });
   if (existingUser)
-    throw new ApiError(400, "User already exists", {
+    throw new ApiError(400, "Validation error", {
       email: "Email already exist",
     });
 
-  // Create a new user and Exclude sensitive fields
   const createdUser = await User.create({ fullName, email, password });
-
   const user = await User.findOne({ email: createdUser.email }).select(
     "-password -createdAt -updatedAt -__v"
   );
@@ -46,13 +43,8 @@ const register = asyncHandler(async (req, res) => {
 // Login a user
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email.trim() || !password.trim()) {
-    const errors = {};
-    if (!email.trim()) errors.email = "Email is required";
-    if (!password.trim()) errors.password = "Password is required";
-    throw new ApiError(401, "All fields are required", errors);
-  }
+  const errors = await authValidator(loginSchema, req.body);
+  if (errors) throw new ApiError(401, "All fields are required", errors);
 
   const userWithPassword = await User.findOne({ email });
   if (!userWithPassword)
