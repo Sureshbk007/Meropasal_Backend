@@ -61,7 +61,7 @@ const login = asyncHandler(async (req, res) => {
 
   // Exclude sensitive fields
   let user = await User.findOne({ email }).select(
-    "-password -createdAt -updatedAt -__v"
+    "-password -createdAt -updatedAt -__v -isActive"
   );
 
   // Generate JWt token
