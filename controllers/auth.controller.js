@@ -60,7 +60,7 @@ const login = asyncHandler(async (req, res) => {
     });
 
   // Exclude sensitive fields
-  const user = await User.findOne({ email }).select(
+  let user = await User.findOne({ email }).select(
     "-password -createdAt -updatedAt -__v"
   );
 
@@ -85,8 +85,11 @@ const logout = asyncHandler(async (req, res) => {
 //Load user if access token exist
 const getUserByToken = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id).select(
-    "-password -createdAt -updatedAt -__v"
+    "-password -createdAt -updatedAt -isActive -__v"
   );
+  if (!user) {
+    throw new ApiError(500, "User not found");
+  }
   res.status(200).json(user);
 });
 

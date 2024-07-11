@@ -1,23 +1,22 @@
 import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-const verifyToken = (req, res, next) => {
+const verifyToken = asyncHandler((req, _, next) => {
   const token =
     req.cookies.token ||
     req.headers.authorization?.split(" ")[1] ||
     req.headers.Authorization?.split(" ")[1];
 
   if (!token) {
-    return next(new ApiError(401, "Authentication failed: Token not provided"));
+    throw new ApiError(401, "Authentication failed: Token not provided");
   }
-
-  try {
-    const decodedToken = jwt.verify(token, process.env.AUTH_TOKEN);
-    req.user = decodedToken;
-    next();
-  } catch (error) {
-    return next(new ApiError(401, "Authentication failed: Invalid token"));
+  const decodedToken = jwt.verify(token, process.env.AUTH_TOKEN);
+  if (!decodedToken) {
+    throw new ApiError(401, "Authentication failed: Invalid token");
   }
-};
+  req.user = decodedToken;
+  next();
+});
 
 export { verifyToken };

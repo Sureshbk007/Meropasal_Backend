@@ -9,6 +9,7 @@ import { verifyToken } from "../middlewares/verifyToken.middleware.js";
 
 const authRouter = express.Router();
 
+//Verify Token
 authRouter.post("/", verifyToken, getUserByToken);
 
 // Register route
