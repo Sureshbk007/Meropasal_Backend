@@ -26,15 +26,6 @@ const register = asyncHandler(async (req, res) => {
     "-password -createdAt -updatedAt -__v"
   );
 
-  // Generate JWt token
-  const token = user.generateAuthToken();
-
-  // Set the token as a cookie
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-  });
-
   res
     .status(201)
     .json(new ApiResponse(201, user, "User registered successfully"));
@@ -61,36 +52,15 @@ const login = asyncHandler(async (req, res) => {
 
   // Exclude sensitive fields
   let user = await User.findOne({ email }).select(
-    "-password -createdAt -updatedAt -__v -isActive"
+    "-password -createdAt -updatedAt -__v"
   );
 
   // Generate JWt token
   const token = user.generateAuthToken();
 
-  // Set the token as a cookie
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-  });
-
-  res.status(200).json(new ApiResponse(200, user, "Login successful"));
+  res
+    .status(200)
+    .json(new ApiResponse(200, { user, token }, "Login successful"));
 });
 
-// Logout a user
-const logout = asyncHandler(async (req, res) => {
-  res.clearCookie("token");
-  res.json({ message: "Logout successfully", success: true });
-});
-
-//Load user if access token exist
-const getUserByToken = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id).select(
-    "-password -createdAt -updatedAt -isActive -__v"
-  );
-  if (!user) {
-    throw new ApiError(500, "User not found");
-  }
-  res.status(200).json(user);
-});
-
-export { register, login, logout, getUserByToken };
+export { register, login };

@@ -29,9 +29,10 @@ const userSchema = new mongoose.Schema(
       default: "USER",
       enum: ["ADMIN", "USER"],
     },
-    isActive: {
-      type: Boolean,
-      default: true,
+    status: {
+      type: String,
+      default: "ACTIVE",
+      enum: ["ACTIVE", "INACTIVE", "BLOCK"],
     },
   },
   { timestamps: true }
@@ -53,9 +54,13 @@ userSchema.methods.comparePassword = function (plaintextPassword) {
 };
 
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ id: this._id }, process.env.AUTH_TOKEN, {
-    expiresIn: "10d",
-  });
+  const token = jwt.sign(
+    { id: this._id, role: this.role },
+    process.env.AUTH_TOKEN,
+    {
+      expiresIn: "10d",
+    }
+  );
   return token;
 };
 
