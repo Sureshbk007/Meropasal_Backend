@@ -20,7 +20,7 @@ app.use("/api/v1/auth", authRouter);
 
 //Secure Routes
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/products", productRouter);
+app.use("/api/v1/product", productRouter);
 app.use("/api/v1/store", storeRouter);
 
 // Global Error Handling Middleware

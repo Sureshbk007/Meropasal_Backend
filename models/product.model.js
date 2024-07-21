@@ -1,54 +1,19 @@
 import mongoose from "mongoose";
 import generateSlug from "../utils/generateSlug.js";
 
-// Review Schema
-const reviewSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    rating: {
-      type: Number,
-      required: true,
-      min: 1,
-      max: 5,
-    },
-    comment: String,
-    image: [
-      {
-        publicId: String,
-        imageUrl: String,
-      },
-    ],
-  },
-  { timestamps: true }
-);
+const imageSchema = new mongoose.Schema({
+  publicId: { type: String, required: true },
+  imageUrl: { type: String, required: true },
+});
 
-// Variant Schema
 const variantSchema = new mongoose.Schema({
   color: String,
   size: String,
-  price: {
-    type: Number,
-    required: true,
-  },
-  crossedPrice: Number,
-  images: [
-    {
-      publicId: String,
-      imageUrl: String,
-    },
-  ],
-  stock: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
+  price: Number,
+  stock: Number,
+  images: [imageSchema],
 });
 
-//Product Schema
 const productSchema = new mongoose.Schema(
   {
     title: {
@@ -57,7 +22,7 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
     category: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
@@ -65,14 +30,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-    details: {
-      type: String,
-      required: true,
-    },
-    ratings: {
-      type: [reviewSchema],
-      default: [],
-    },
+    description: String,
+    price: Number,
+    stock: Number,
+    image: [imageSchema],
     variants: [variantSchema],
   },
   { timestamps: true }

@@ -15,60 +15,28 @@ const orderItemSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    products: [orderItemSchema],
+    totalAmount: { type: Number, required: true },
     status: {
       type: String,
       default: "PENDING",
       enum: [
         "PENDING",
         "PROCESSING",
-        "DISPATCHED",
+        "SHIPPING",
         "DELIVERED",
         "CANCELLED",
         "RETURNED",
       ],
     },
-    paymentStatus: {
-      type: String,
-      required: true,
-      enum: ["UNPAID", "PAID"],
-    },
-    paymentMethod: {
-      type: String,
-      required: true,
-      enum: ["COD", "ESEWA"],
-    },
-    totalPrice: {
-      type: Number,
+    shippingDetails: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ShippingDetails",
       required: true,
     },
-    shippingAddress: {
-      city: {
-        type: String,
-        required: true,
-      },
-      address: {
-        type: String,
-        required: true,
-      },
-      landmark: String,
-    },
-    contact: {
-      fullName: {
-        type: String,
-        required: true,
-      },
-      email: String,
-      phoneNumber: {
-        type: String,
-        required: true,
-      },
-    },
-    orderItems: [orderItemSchema],
+    paymentMethod: { type: String, enum: ["COD", "ESEWA"], required: true },
+    paymentStatus: { type: String, enum: ["PAID", "UNPAID"], required: true },
   },
   { timestamps: true }
 );

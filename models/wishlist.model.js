@@ -1,21 +1,22 @@
 import mongoose from "mongoose";
 
-const cartItemSchema = new mongoose.Schema({
+const wishlistItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
   },
   variant: { type: mongoose.Schema.Types.ObjectId, ref: "Product.variants" },
-  quantity: { type: Number, required: true },
 });
 
-const cartSchema = new mongoose.Schema(
+const wishlistSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    products: [cartItemSchema],
+    products: [wishlistItemSchema],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export const Cart = new mongoose.model("Cart", cartSchema);
+export const Wishlist = mongoose.model("Wishlist", wishlistSchema);
