@@ -3,7 +3,8 @@ import {
   authRouter,
   userRouter,
   productRouter,
-  storeRouter,
+  categoryRouter,
+  homePageRouter,
 } from "./routes/index.js";
 import cors from "cors";
 import { ApiError } from "./utils/ApiError.js";
@@ -20,8 +21,9 @@ app.use("/api/v1/auth", authRouter);
 
 //Secure Routes
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/product", productRouter);
-app.use("/api/v1/store", storeRouter);
+app.use("/api/v1/products", productRouter);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/home", homePageRouter);
 
 // Global Error Handling Middleware
 app.use((err, req, res, next) => {
