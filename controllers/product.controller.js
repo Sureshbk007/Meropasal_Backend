@@ -1,8 +1,12 @@
 import { Product } from "../models/product.model.js";
+import { Category } from "../models/category.mode.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 
 const createProduct = asyncHandler(async (req, res) => {
   const {
@@ -56,7 +60,78 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
+  const {
+    q,
+    sortBy = "latest",
+    category,
+    minPrice,
+    maxPrice,
+    rating = 0,
+    limit = 20,
+    page = 1,
+  } = req.query;
+
+  let filters = {};
+  if (category) {
+    const categoriesArray = Array.isArray(category) ? category : [category];
+    const matchingCategories = await Category.find({
+      name: { $in: categoriesArray.map((cat) => new RegExp(cat, "i")) },
+    });
+
+    if (matchingCategories.length) {
+      filters.category = { $in: matchingCategories.map((cat) => cat._id) };
+    } else {
+      return res
+        .status(404)
+        .json(
+          new ApiResponse(404, [], "No products found for these categories")
+        );
+    }
+  }
+  if (minPrice || maxPrice) {
+    filters.price = {};
+    if (minPrice) filters.price.$gte = parseFloat(minPrice);
+    if (maxPrice) filters.price.$lte = parseFloat(maxPrice);
+  }
+
+  if (rating) {
+    filters.rating.$gte = parseFloat(rating);
+  }
+
+  if (q) {
+    const matchingCategories = await Category.find({
+      name: { $regex: q, $options: "i" },
+    });
+    const categoryIds = matchingCategories.map((cat) => cat._id);
+    filters.$or = [
+      { title: { $regex: q, $options: "i" } },
+      { brand: { $regex: q, $options: "i" } },
+      { description: { $regex: q, $options: "i" } },
+      { category: { $in: categoryIds } },
+    ];
+  }
+
+  const resultsLimit = parseInt(limit);
+  const pageNumber = Math.max(1, parseInt(page));
+  const skip = (pageNumber - 1) * resultsLimit;
+
+  let sortOption = {};
+  if (sortBy === "latest") {
+    sortOption.createdAt = -1;
+  } else if (sortBy === "priceLowToHigh") {
+    sortOption.sellingPrice = 1;
+  } else if (sortBy === "priceHighToLow") {
+    sortOption.sellingPrice = -1;
+  }
+
+  const products = await Product.find(filters)
+    .limit(resultsLimit)
+    .skip(skip)
+    .sort(sortOption)
+    .populate({
+      path: "category",
+      select: "name",
+    });
 
   res
     .status(200)
@@ -65,7 +140,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
 const getSingleProduct = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
-  const product = await Product.findOne({ slug });
+  const product = await Product.findOne({ slug }).populate({
+    path: "category",
+    select: "name",
+  });
   res
     .status(200)
     .json(new ApiResponse(200, product, "Product retrieved successfully"));
@@ -77,7 +155,22 @@ const deleteProduct = asyncHandler(async (req, res) => {
   if (!product) {
     throw new ApiError(400, "Product not found");
   }
+  for (let img of product.images) {
+    try {
+      await deleteFromCloudinary(img.publicId);
+    } catch (error) {
+      console.error(
+        `Failed to delete image with public ID ${img.publicId}:`,
+        error
+      );
+    }
+  }
   const deletedProduct = await Product.findByIdAndDelete(id);
+  if (!deletedProduct) {
+    return res
+      .status(404)
+      .json(new ApiResponse(404, null, "Product not found during deletion"));
+  }
   res
     .status(200)
     .json(new ApiResponse(200, deletedProduct, "Product deleted successfully"));

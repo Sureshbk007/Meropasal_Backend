@@ -26,19 +26,11 @@ const createCategory = asyncHandler(async (req, res) => {
 });
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find().select("_id name image.imageUrl");
-
-  const formattedCategories = categories.map((category) => ({
-    id: category._id,
-    name: category.name,
-    image: category.image.imageUrl,
-  }));
+  const categories = await Category.find();
 
   res
     .status(200)
-    .json(
-      new ApiResponse(200, formattedCategories, "Category fetch successfully")
-    );
+    .json(new ApiResponse(200, categories, "Category fetch successfully"));
 });
 
 export { createCategory, getAllCategory };

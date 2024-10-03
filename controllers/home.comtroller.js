@@ -6,7 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const fetchHomePageData = asyncHandler(async (req, res) => {
   const categories = await Category.find().limit(10);
   const flashSaleProducts = await Product.find({ isSale: true }).limit(15);
-  const latestProducts = await Product.find({ createdAt: -1 }).limit(20);
+  const latestProducts = await Product.find().limit(20).sort({ createdAt: -1 });
 
   res
     .status(200)
