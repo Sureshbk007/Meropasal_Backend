@@ -26,7 +26,8 @@ const createCategory = asyncHandler(async (req, res) => {
 });
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find();
+  const { limit } = req.query;
+  const categories = await Category.find().limit(limit);
 
   res
     .status(200)

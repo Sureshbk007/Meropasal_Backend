@@ -69,9 +69,21 @@ const getAllProducts = asyncHandler(async (req, res) => {
     rating = 0,
     limit = 20,
     page = 1,
+    brand,
+    isSale,
   } = req.query;
-
   let filters = {};
+
+  if (isSale) {
+    filters.isSale = Boolean(isSale);
+  }
+  if (brand) {
+    const brandArray = Array.isArray(brand) ? brand : [brand];
+    filters.brand = {
+      $in: brandArray.map((br) => new RegExp(br, "i")),
+    };
+  }
+
   if (category) {
     const categoriesArray = Array.isArray(category) ? category : [category];
     const matchingCategories = await Category.find({
@@ -95,7 +107,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
   }
 
   if (rating) {
-    filters.rating.$gte = parseFloat(rating);
+    filters.rating = {
+      $gte: parseFloat(rating),
+    };
   }
 
   if (q) {

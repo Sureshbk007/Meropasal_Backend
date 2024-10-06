@@ -9,7 +9,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(upload.single("categoryImg"), createCategory)
-  .get(getAllCategory);
+  .get(getAllCategory)
+  .post(upload.single("categoryImg"), createCategory);
 
 export default router;
