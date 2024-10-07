@@ -11,8 +11,8 @@ import { ApiError } from "./utils/ApiError.js";
 const app = express();
 
 // Middleware
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "64kb" }));
+app.use(express.json({ limit: "64kb" }));
 app.use(cors());
 
 // Auth Route
