@@ -75,4 +75,14 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 });
 
-export { getAllOrders, createOrder };
+const getUserOrders = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const orders = await Order.find({ user: userId, isDeleted: false })
+    .populate({ path: "products.productId", select: "title images slug -_id" })
+    .select("-_id -user -isDeleted -updatedAt -__v");
+  res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Orders fetched successfully"));
+});
+
+export { getAllOrders, createOrder, getUserOrders };
