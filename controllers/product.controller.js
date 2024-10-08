@@ -101,9 +101,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
     }
   }
   if (minPrice || maxPrice) {
-    filters.price = {};
-    if (minPrice) filters.price.$gte = parseFloat(minPrice);
-    if (maxPrice) filters.price.$lte = parseFloat(maxPrice);
+    filters.sellingPrice = {};
+    if (minPrice) filters.sellingPrice.$gte = parseFloat(minPrice);
+    if (maxPrice) filters.sellingPrice.$lte = parseFloat(maxPrice);
   }
 
   if (rating) {
