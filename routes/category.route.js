@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createCategory,
+  deleteCategory,
   getAllCategory,
 } from "../controllers/category.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.middleware.js";
@@ -10,6 +11,7 @@ const router = express.Router();
 router
   .route("/")
   .get(getAllCategory)
-  .post(upload.single("categoryImg"), createCategory);
+  .post(verifyToken, upload.single("categoryImg"), createCategory)
+  .delete(verifyToken, deleteCategory);
 
 export default router;
