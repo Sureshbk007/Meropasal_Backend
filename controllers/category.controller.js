@@ -51,4 +51,44 @@ const deleteCategory = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, category, "Category deleted successfully"));
 });
-export { createCategory, getAllCategory, deleteCategory };
+
+const updateCategory = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  const { name } = req.body;
+
+  const category = await Category.findById(id);
+  if (!category) {
+    throw new ApiError(400, "Category not found");
+  }
+
+  let publicId, imageUrl;
+
+  if (req.file?.path) {
+    const response = await uploadOnCloudinary(req.file.path);
+    if (!response) {
+      throw new ApiError(500, "Failed to upload image to Cloudinary");
+    }
+    ({ public_id: publicId, url: imageUrl } = response);
+    const data = await deleteFromCloudinary(category.image.publicId);
+    if (!data) {
+      throw new ApiError(500, "Failed to delete category from cloudinary");
+    }
+  }
+
+  const updateFields = { name };
+  if (publicId && imageUrl) {
+    updateFields.image = { publicId, imageUrl };
+  }
+
+  const updatedCategory = await Category.findByIdAndUpdate(id, updateFields, {
+    new: true,
+  });
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedCategory, "Category updated successfully")
+    );
+});
+
+export { createCategory, getAllCategory, deleteCategory, updateCategory };

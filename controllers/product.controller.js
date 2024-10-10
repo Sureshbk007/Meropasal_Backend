@@ -164,7 +164,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 });
 
 const deleteProduct = asyncHandler(async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.query;
   const product = await Product.findById(id);
   if (!product) {
     throw new ApiError(400, "Product not found");
