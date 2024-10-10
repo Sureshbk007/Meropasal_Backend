@@ -173,10 +173,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     try {
       await deleteFromCloudinary(img.publicId);
     } catch (error) {
-      console.error(
-        `Failed to delete image with public ID ${img.publicId}:`,
-        error
-      );
+      throw new ApiError("Failed to delete image from cloudinary");
     }
   }
   const deletedProduct = await Product.findByIdAndDelete(id);
@@ -190,4 +187,68 @@ const deleteProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, deletedProduct, "Product deleted successfully"));
 });
 
-export { createProduct, getAllProducts, getSingleProduct, deleteProduct };
+const updateProduct = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  const {
+    title,
+    category,
+    brand,
+    description,
+    sellingPrice,
+    crossedPrice,
+    purchasedPrice,
+    isSale,
+    stock,
+    sizes,
+    colors,
+    rating,
+  } = req.body;
+
+  // Find product by ID
+  let product = await Product.findById(id);
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  // Prepare updated fields
+  const updateFields = {};
+
+  if (title) updateFields.title = title;
+  if (category) updateFields.category = category;
+  if (brand) updateFields.brand = brand;
+  if (description) updateFields.description = description;
+  if (sellingPrice) updateFields.sellingPrice = Number(sellingPrice);
+  if (crossedPrice) updateFields.crossedPrice = Number(crossedPrice);
+  if (purchasedPrice) updateFields.purchasedPrice = Number(purchasedPrice);
+  if (isSale) updateFields.isSale = isSale;
+  if (stock) updateFields.stock = Number(stock);
+  if (sizes) updateFields.sizes = sizes;
+  if (colors) updateFields.colors = colors;
+  if (rating) updateFields.rating = rating;
+
+  if (req.files && req.files.length > 0) {
+    const images = await Promise.all(
+      req.files.map(async (file) => {
+        const { public_id, url } = await uploadOnCloudinary(file.path);
+        return { publicId: public_id, imageUrl: url };
+      })
+    );
+    updateFields.images = images;
+  }
+
+  const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, {
+    new: true,
+  });
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, updatedProduct, "Product updated successfully"));
+});
+
+export {
+  createProduct,
+  getAllProducts,
+  getSingleProduct,
+  deleteProduct,
+  updateProduct,
+};

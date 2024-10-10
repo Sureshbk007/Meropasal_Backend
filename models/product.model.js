@@ -57,6 +57,10 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
@@ -67,7 +71,7 @@ productSchema.pre("save", async function (next) {
     try {
       this.slug = generateSlug(this.title);
     } catch (error) {
-      return next(error); // Handle errors in slug generation
+      return next(error);
     }
   }
   next();
