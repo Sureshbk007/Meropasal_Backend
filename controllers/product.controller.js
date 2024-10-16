@@ -77,7 +77,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     page = 1,
     brand,
     isSale,
-    isActive,
+    isActive = true,
   } = req.query;
   let filters = {};
 
