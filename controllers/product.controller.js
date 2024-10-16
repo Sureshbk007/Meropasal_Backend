@@ -20,6 +20,8 @@ const createProduct = asyncHandler(async (req, res) => {
     stock,
     sizes,
     colors,
+    isSale,
+    isActive,
   } = req.body;
 
   const images = [];
@@ -49,6 +51,10 @@ const createProduct = asyncHandler(async (req, res) => {
   if (stock) productData.stock = Number(stock);
   if (sizes) productData.sizes = sizes;
   if (colors) productData.colors = colors;
+  if (isSale)
+    productData.isSale = isSale.toLowerCase() === "true" ? true : false;
+  if (isActive)
+    productData.isActive = isActive.toLowerCase() === "true" ? true : false;
 
   const product = await Product.create(productData);
   if (!product) {
@@ -71,11 +77,15 @@ const getAllProducts = asyncHandler(async (req, res) => {
     page = 1,
     brand,
     isSale,
+    isActive,
   } = req.query;
   let filters = {};
 
+  if (isActive) {
+    filters.isActive = isActive;
+  }
   if (isSale) {
-    filters.isSale = Boolean(isSale);
+    filters.isSale = isSale;
   }
   if (brand) {
     const brandArray = Array.isArray(brand) ? brand : [brand];
@@ -202,6 +212,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     sizes,
     colors,
     rating,
+    isActive,
   } = req.body;
 
   // Find product by ID
@@ -220,11 +231,12 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (sellingPrice) updateFields.sellingPrice = Number(sellingPrice);
   if (crossedPrice) updateFields.crossedPrice = Number(crossedPrice);
   if (purchasedPrice) updateFields.purchasedPrice = Number(purchasedPrice);
-  if (isSale) updateFields.isSale = isSale;
   if (stock) updateFields.stock = Number(stock);
   if (sizes) updateFields.sizes = sizes;
   if (colors) updateFields.colors = colors;
   if (rating) updateFields.rating = rating;
+  if (isSale) updateFields.isSale = isSale === "true" ? true : false;
+  if (isActive) updateFields.isActive = isActive === "true" ? true : false;
 
   if (req.files && req.files.length > 0) {
     const images = await Promise.all(

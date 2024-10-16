@@ -10,10 +10,10 @@ import { upload } from "../middlewares/multer.middleware.js";
 const router = express.Router();
 
 // Create a user
-router.post("/createUser", createUser);
+router.post("/", createUser);
 
 // Get all the users
-router.post("/getAllUsers", verifyToken, getAllUsers);
-router.put("/update", verifyToken, upload.single("avatar"), updateUser);
+router.get("/", verifyToken, getAllUsers);
+router.put("/", verifyToken, upload.single("avatar"), updateUser);
 
 export default router;
