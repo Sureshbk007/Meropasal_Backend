@@ -9,13 +9,13 @@ const esewaSuccess = asyncHandler(async (req, res) => {
   order.payment.paymentId = paymentId;
   order.payment.paymentStatus = "PAID";
   await order.save();
-  res.redirect("http://localhost:5173/checkout?order=success");
+  res.redirect("https://meropasal-frontend.vercel.app/checkout?order=success");
 });
 
 const esewaFailure = asyncHandler(async (req, res) => {
   const { orderId } = req.query;
   await Order.findOneAndDelete({ orderId });
-  res.redirect("http://localhost:5173/checkout?order=failed");
+  res.redirect("https://meropasal-frontend.vercel.app/checkout?order=failed");
 });
 
 export { esewaSuccess, esewaFailure };
