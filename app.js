@@ -6,6 +6,7 @@ import {
   categoryRouter,
   orderRouter,
   esewaRouter,
+  homeRouter,
 } from "./routes/index.js";
 import cors from "cors";
 import { ApiError } from "./utils/ApiError.js";
@@ -21,6 +22,7 @@ app.use(cors());
 app.use("/api/v1/auth", authRouter);
 
 //Secure Routes
+app.use("/api/v1/home", homeRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/category", categoryRouter);

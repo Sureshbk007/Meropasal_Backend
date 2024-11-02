@@ -4,6 +4,7 @@ import productRouter from "./products.route.js";
 import categoryRouter from "./category.route.js";
 import orderRouter from "./orders.route.js";
 import esewaRouter from "./esewa.route.js";
+import homeRouter from "./home.route.js";
 
 export {
   authRouter,
@@ -12,4 +13,5 @@ export {
   categoryRouter,
   orderRouter,
   esewaRouter,
+  homeRouter,
 };

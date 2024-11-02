@@ -1,5 +1,5 @@
 import { Product } from "../models/product.model.js";
-import { Category } from "../models/category.mode.js";
+import { Category } from "../models/category.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -257,10 +257,25 @@ const updateProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedProduct, "Product updated successfully"));
 });
 
+const gethomePageData = asyncHandler(async (req, res) => {
+  const categories = await Category.find().limit(10);
+  const saleProducts = await Product.find({ isSale: true }).limit(15);
+  const latestProducts = await Product.find().sort({ createdAt: -1 });
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { categories, saleProducts, latestProducts },
+        "Home page data fetched successfully"
+      )
+    );
+});
 export {
   createProduct,
   getAllProducts,
   getSingleProduct,
   deleteProduct,
   updateProduct,
+  gethomePageData,
 };
